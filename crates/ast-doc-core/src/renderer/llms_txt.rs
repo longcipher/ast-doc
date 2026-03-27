@@ -34,10 +34,31 @@ pub fn render(
     if !description.is_empty() {
         buf.push_str(&format!("> {description}\n"));
     }
+
+    // Build accurate mode description based on actual strategies used
+    let mut used_modes = Vec::new();
+    if scheduled.strategy_counts.contains_key(&OutputStrategy::Full) {
+        used_modes.push("Full");
+    }
+    if scheduled.strategy_counts.contains_key(&OutputStrategy::NoTests) {
+        used_modes.push("NoTests");
+    }
+    if scheduled.strategy_counts.contains_key(&OutputStrategy::Summary) {
+        used_modes.push("Summary (signatures only)");
+    }
+
     buf.push_str(
         "> Note: This codebase has been optimized using AST trimming to fit token limits.\n",
     );
-    buf.push_str("> Files are presented in Full, NoTests, or Summary (signatures only) modes.\n\n");
+    if used_modes.is_empty() {
+        buf.push_str("> No source files were included in the output.\n\n");
+    } else {
+        let modes_str = used_modes.join(", ");
+        buf.push_str(&format!(
+            "> Files are presented in {modes_str} mode{}.\n\n",
+            if used_modes.len() == 1 { "" } else { "s" }
+        ));
+    }
 
     // Structure & Symbol Index
     buf.push_str("## Structure & Symbol Index\n\n");

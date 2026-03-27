@@ -17,8 +17,9 @@ pub fn render_llms_txt(
     ingestion: &IngestionResult,
     config: &AstDocConfig,
 ) -> eyre::Result<String> {
-    let project_name = config
-        .path
+    // Canonicalize the path to resolve "." and get the actual directory name
+    let canonical_path = config.path.canonicalize().unwrap_or_else(|_| config.path.clone());
+    let project_name = canonical_path
         .file_name()
         .map_or_else(|| "unknown".to_string(), |n| n.to_string_lossy().to_string());
 
