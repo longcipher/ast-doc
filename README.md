@@ -1,5 +1,12 @@
 # ast-doc
 
+[![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/longcipher/ast-doc)
+[![Context7](https://img.shields.io/badge/Website-context7.com-blue)](https://context7.com/longcipher/ast-doc)
+[![crates.io](https://img.shields.io/crates/v/ast-doc.svg)](https://crates.io/crates/ast-doc)
+[![docs.rs](https://docs.rs/ast-doc/badge.svg)](https://docs.rs/ast-doc)
+
+![ast-doc](https://socialify.git.ci/longcipher/ast-doc/image?font=Source+Code+Pro&language=1&name=1&owner=1&pattern=Circuit+Board&theme=Auto)
+
 AST-powered code documentation tool for generating optimized `llms.txt` files from codebases.
 
 ## Overview
