@@ -1,4 +1,7 @@
-//! ast-doc: Generate optimized llms.txt documentation from codebases.
+//! CLI binary for generating optimized `llms.txt` documentation from codebases.
+//!
+//! This crate wraps the [ast-doc-core](https://crates.io/crates/ast-doc-core) library
+//! with a command-line interface built on `clap`.
 
 #![allow(clippy::print_stdout, clippy::print_stderr)]
 

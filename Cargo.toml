@@ -2,7 +2,11 @@
 version = "0.1.0"
 edition = "2024"
 license = "Apache-2.0"
-repository = "TODO"
+repository = "https://github.com/longcipher/ast-doc"
+homepage = "https://github.com/longcipher/ast-doc"
+documentation = "https://docs.rs/ast-doc-core"
+keywords = ["ast", "documentation", "llms-txt", "code-analysis", "tree-sitter"]
+categories = ["development-tools", "command-line-utilities"]
 
 [workspace]
 members = ["bin/*", "crates/*"]

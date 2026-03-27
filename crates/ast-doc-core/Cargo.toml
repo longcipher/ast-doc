@@ -2,7 +2,14 @@
 name = "ast-doc-core"
 version.workspace = true
 edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+keywords.workspace = true
+categories.workspace = true
 description = "Core library for ast-doc: four-stage pipeline for generating optimized llms.txt documentation"
+readme = "README.md"
 
 [features]
 all-languages = [

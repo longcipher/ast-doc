@@ -1,7 +1,37 @@
-//! ast-doc-core: Core library for the ast-doc pipeline.
+//! Core library for [ast-doc](https://crates.io/crates/ast-doc): a four-stage pipeline
+//! for generating optimized `llms.txt` documentation from codebases.
 //!
-//! Four-stage pipeline: Ingestion -> AST Parser -> Token Scheduler -> Renderer.
-//! Generates optimized `llms.txt` documentation from codebases.
+//! # Pipeline
+//!
+//! 1. **Ingestion** — File discovery, git metadata capture, directory tree generation.
+//! 2. **Parser** — tree-sitter AST extraction with pre-computed strategy variants.
+//! 3. **Scheduler** — Token budget optimization with intelligent degradation.
+//! 4. **Renderer** — Markdown assembly with anti-bloat rules.
+//!
+//! # Quick Start
+//!
+//! ```no_run
+//! use std::path::PathBuf;
+//!
+//! use ast_doc_core::{AstDocConfig, OutputStrategy};
+//!
+//! let config = AstDocConfig {
+//!     path: PathBuf::from("."),
+//!     output: None,
+//!     max_tokens: 128_000,
+//!     core_patterns: vec![],
+//!     default_strategy: OutputStrategy::Full,
+//!     include_patterns: vec![],
+//!     exclude_patterns: vec![],
+//!     no_git: false,
+//!     no_tree: false,
+//!     copy: false,
+//!     verbose: false,
+//! };
+//!
+//! let result = ast_doc_core::run_pipeline(&config).expect("pipeline failed");
+//! println!("{}", result.output);
+//! ```
 
 #![allow(clippy::print_stdout, clippy::print_stderr)]
 

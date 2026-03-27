@@ -2,7 +2,14 @@
 name = "ast-doc"
 version.workspace = true
 edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+keywords.workspace = true
+categories.workspace = true
 description = "CLI for generating optimized llms.txt documentation from codebases"
+readme = "README.md"
 
 [dependencies]
 ast-doc-core = { workspace = true }
