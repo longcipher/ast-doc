@@ -1,21 +1,128 @@
-# Rust Workspace Template
+# ast-doc
 
-Rust workspace template for `bin/` CLI crates and `crates/` shared libraries with Gherkin + `cucumber-rs` for BDD and `cargo test` for TDD.
+AST-powered code documentation tool for generating optimized `llms.txt` files from codebases.
+
+## Overview
+
+`ast-doc` is a Rust CLI tool that combines broad file traversal with deep AST-based semantic parsing to create optimized documentation. It uses a four-stage pipeline:
+
+1. **Ingestion** — File discovery, git metadata capture, directory tree generation
+2. **Parser** — tree-sitter AST extraction with pre-computed strategy variants
+3. **Scheduler** — Token budget optimization with intelligent degradation
+4. **Renderer** — Markdown assembly with anti-bloat rules
+
+## Supported Languages
+
+- Rust (`.rs`)
+- Python (`.py`)
+- TypeScript/JavaScript (`.ts`, `.tsx`, `.js`, `.jsx`)
+- Go (`.go`)
+- C (`.c`, `.h`)
+
+## Installation
+
+### As an Agent Skill
+
+Install this skill for use with AI coding agents:
+
+```bash
+npx skills add longcipher/ast-doc
+```
+
+### From Source
+
+```bash
+cargo install --path bin/ast-doc
+```
+
+### From crates.io
+
+```bash
+cargo install ast-doc
+```
 
 ## Features
 
-- `bin/` + `crates/` workspace layout
-- CLI example (`bin/cli-app`) using `clap`
-- Shared library example (`crates/common`)
-- BDD acceptance tests with Gherkin + `cucumber-rs`
-- TDD inner loop with `cargo test`
-- Property tests with `proptest` inside the normal `cargo test` flow
-- Optional fuzzing with `cargo-fuzz` for parser-like, protocol, or `unsafe`-heavy crates
-- Optional benchmarks with Criterion for performance-sensitive crates
-- Strict workspace lint configuration
-- `just` commands for format/lint/test/bdd/build
+- **Four-stage pipeline**: Ingestion → AST Parser → Token Scheduler → Renderer
+- **Output strategies**: Full, NoTests (strip tests), Summary (signatures only)
+- **Token budget management**: Configurable `--max-tokens` with automatic degradation
+- **Core file protection**: Mark files with `--core` patterns that never get degraded
+- **Git context**: Automatic branch, commit, and diff inclusion (disable with `--no-git`)
+- **Directory tree**: Visual project structure with language annotations (disable with `--no-tree`)
+- **Glob filtering**: Include/exclude patterns for fine-grained file selection
+- **Anti-bloat rules**: Compress blank lines, trim trailing whitespace
+- **BDD acceptance tests**: Gherkin scenarios with `cucumber-rs`
+- **TDD inner loop**: Unit tests with `cargo test`
+- **Property tests**: `proptest` in the standard test flow
 
-## Quick Start
+## Usage
+
+### Basic Usage
+
+```bash
+# Generate llms.txt to stdout
+ast-doc .
+
+# Write to a file
+ast-doc . --output llms.txt
+
+# Set token budget (default: 128,000)
+ast-doc . --max-tokens 64000
+```
+
+### Output Strategies
+
+```bash
+# Full source code (default)
+ast-doc . --strategy full
+
+# Strip test modules and functions
+ast-doc . --strategy no-tests
+
+# Signatures only, no implementations
+ast-doc . --strategy summary
+```
+
+### Core Files Protection
+
+```bash
+# Core files always use Full strategy, never degraded
+ast-doc . --core "src/main.rs" --core "src/lib.rs" --strategy summary
+```
+
+### File Filtering
+
+```bash
+# Include only Rust files
+ast-doc . --include "*.rs"
+
+# Exclude test files
+ast-doc . --exclude "*test*"
+
+# Combine include/exclude
+ast-doc . --include "*.rs" --exclude "target/**"
+```
+
+### Git and Tree Options
+
+```bash
+# Skip git context
+ast-doc . --no-git
+
+# Skip directory tree
+ast-doc . --no-tree
+
+# Copy to clipboard (not yet implemented)
+ast-doc . --copy
+```
+
+### Verbose Logging
+
+```bash
+ast-doc . --verbose
+```
+
+## Quick Start (Development)
 
 ```bash
 just setup
@@ -24,8 +131,9 @@ just test
 just bdd
 just test-all
 
-# Run the example CLI
-cargo run -p cli-app -- --name Rust
+# Run the CLI
+cargo run -p ast-doc -- --help
+cargo run -p ast-doc -- .
 ```
 
 ## Testing Matrix
@@ -93,4 +201,4 @@ That keeps the default template lean while still pointing parser-like, protocol,
 
 ## License
 
-MIT
+Apache-2.0

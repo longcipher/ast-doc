@@ -10,6 +10,10 @@ exclude = [".github/"]
 resolver = "3"
 
 [workspace.dependencies]
+# local crates
+ast-doc-core = { path = "crates/ast-doc-core", version = "0.1.0" }
+
+# external crates
 clap = "4.6.0"
 config = "0.15.22"
 cucumber = "0.22.1"

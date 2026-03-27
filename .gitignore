@@ -28,5 +28,4 @@ bun.lockb
 
 # Leptos
 /site/
-code2prompt/
-codebank/
+.rumdl_cache/

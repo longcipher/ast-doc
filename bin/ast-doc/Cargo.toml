@@ -5,7 +5,7 @@ edition.workspace = true
 description = "CLI for generating optimized llms.txt documentation from codebases"
 
 [dependencies]
-ast-doc-core = { path = "../../crates/ast-doc-core" }
+ast-doc-core = { workspace = true }
 clap = { workspace = true, features = ["derive"] }
 eyre = { workspace = true }
 tracing = { workspace = true }
