@@ -2,6 +2,13 @@
 
 #![allow(clippy::print_stdout, clippy::print_stderr)]
 
+#[cfg(feature = "hotpath")]
+#[ctor::ctor]
+fn init_hotpath_for_bdd() {
+    let _guard = hotpath::GuardBuilder::new("bdd_test").build();
+    std::mem::forget(_guard);
+}
+
 use std::{fs, path::PathBuf};
 
 use ast_doc_core::{

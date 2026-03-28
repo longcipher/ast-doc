@@ -106,6 +106,9 @@ pub fn build_config(args: &Args) -> ast_doc_core::AstDocConfig {
 }
 
 fn main() -> Result<()> {
+    #[cfg(feature = "hotpath")]
+    let _guard = hotpath::GuardBuilder::new("main").build();
+
     let args = Args::parse();
 
     tracing_subscriber::fmt()

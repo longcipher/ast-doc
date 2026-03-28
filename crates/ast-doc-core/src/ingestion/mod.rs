@@ -54,6 +54,7 @@ pub struct IngestionResult {
 /// # Errors
 ///
 /// Returns an error if directory walking or git operations fail.
+#[cfg_attr(feature = "hotpath", hotpath::measure)]
 pub fn run_ingestion(config: &AstDocConfig) -> Result<IngestionResult, AstDocError> {
     let root = config
         .path
@@ -123,8 +124,14 @@ pub fn run_ingestion(config: &AstDocConfig) -> Result<IngestionResult, AstDocErr
 }
 
 /// Count tokens in a string using `tiktoken-rs`.
+///
+/// Uses a cached BPE instance to avoid repeated initialization.
 fn count_tokens(text: &str) -> usize {
-    tiktoken_rs::cl100k_base().map_or(0, |bpe| bpe.encode_with_special_tokens(text).len())
+    use std::sync::LazyLock;
+    static BPE: LazyLock<Option<tiktoken_rs::CoreBPE>> =
+        LazyLock::new(|| tiktoken_rs::cl100k_base().ok());
+
+    BPE.as_ref().map_or(0, |bpe| bpe.encode_with_special_tokens(text).len())
 }
 
 /// Build a directory tree string from discovered file paths.

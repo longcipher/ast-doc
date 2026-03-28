@@ -66,6 +66,7 @@ pub struct PipelineResult {
 /// # Errors
 ///
 /// Returns an error if any pipeline stage fails.
+#[cfg_attr(feature = "hotpath", hotpath::measure)]
 pub fn run_pipeline(config: &AstDocConfig) -> eyre::Result<PipelineResult> {
     // Phase 1: Ingestion — file discovery, git metadata, directory tree
     let ingestion = ingestion::run_ingestion(config)?;
@@ -116,6 +117,22 @@ fn compute_base_overhead(ingestion: &IngestionResult) -> usize {
 }
 
 /// Count tokens in a string using `tiktoken-rs`.
+///
+/// Uses a cached BPE instance to avoid repeated initialization.
 fn count_tokens(text: &str) -> usize {
-    tiktoken_rs::cl100k_base().map_or(0, |bpe| bpe.encode_with_special_tokens(text).len())
+    use std::sync::LazyLock;
+    static BPE: LazyLock<Option<tiktoken_rs::CoreBPE>> =
+        LazyLock::new(|| tiktoken_rs::cl100k_base().ok());
+
+    BPE.as_ref().map_or(0, |bpe| bpe.encode_with_special_tokens(text).len())
+}
+
+/// Initialize hotpath guard for tests.
+///
+/// This is called automatically when running tests with the hotpath feature enabled.
+#[cfg(all(test, feature = "hotpath"))]
+#[ctor::ctor]
+fn init_hotpath_for_tests() {
+    let _guard = hotpath::GuardBuilder::new("test").build();
+    std::mem::forget(_guard);
 }

@@ -11,10 +11,14 @@ categories.workspace = true
 description = "CLI for generating optimized llms.txt documentation from codebases"
 readme = "README.md"
 
+[features]
+hotpath = ["ast-doc-core/hotpath", "dep:hotpath"]
+
 [dependencies]
 ast-doc-core = { workspace = true }
 clap = { workspace = true, features = ["derive"] }
 eyre = { workspace = true }
+hotpath = { workspace = true, optional = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 

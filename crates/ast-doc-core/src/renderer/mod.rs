@@ -12,6 +12,7 @@ use crate::{config::AstDocConfig, ingestion::IngestionResult, scheduler::Schedul
 /// # Errors
 ///
 /// Returns an error if rendering fails.
+#[cfg_attr(feature = "hotpath", hotpath::measure)]
 pub fn render_llms_txt(
     scheduled: &ScheduleResult,
     ingestion: &IngestionResult,

@@ -48,6 +48,7 @@ pub struct ScheduleResult {
 ///
 /// Returns `AstDocError::BudgetExceeded` if even minimum strategies
 /// exceed the token budget.
+#[cfg_attr(feature = "hotpath", hotpath::measure)]
 pub fn run_scheduler(
     parsed: &[ParsedFile],
     config: &AstDocConfig,
