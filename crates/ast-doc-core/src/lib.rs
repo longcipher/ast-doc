@@ -66,6 +66,7 @@ pub struct PipelineResult {
 /// # Errors
 ///
 /// Returns an error if any pipeline stage fails.
+#[cfg_attr(feature = "hotpath", allow(missing_docs))]
 #[cfg_attr(feature = "hotpath", hotpath::measure)]
 pub fn run_pipeline(config: &AstDocConfig) -> eyre::Result<PipelineResult> {
     // Phase 1: Ingestion — file discovery, git metadata, directory tree

@@ -54,6 +54,7 @@ pub struct IngestionResult {
 /// # Errors
 ///
 /// Returns an error if directory walking or git operations fail.
+#[cfg_attr(feature = "hotpath", allow(missing_docs))]
 #[cfg_attr(feature = "hotpath", hotpath::measure)]
 pub fn run_ingestion(config: &AstDocConfig) -> Result<IngestionResult, AstDocError> {
     let root = config
