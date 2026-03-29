@@ -24,7 +24,7 @@ cucumber = "0.22.1"
 eyre = "0.6.12"
 git2 = "0.20.4"
 globset = "0.4.18"
-hotpath = { version = "0.5", default-features = false }
+hotpath = { version = "0.14.1", default-features = false }
 ignore = "0.4.25"
 proptest = "1.11.0"
 rayon = "1.11.0"
@@ -41,7 +41,7 @@ tree-sitter = "0.26.7"
 tree-sitter-c = "0.24.1"
 tree-sitter-go = "0.25.0"
 tree-sitter-python = "0.25.0"
-tree-sitter-rust = "0.24.1"
+tree-sitter-rust = "0.24.2"
 tree-sitter-typescript = "0.23.2"
 
 # Enable pedantic lints for stricter code quality
