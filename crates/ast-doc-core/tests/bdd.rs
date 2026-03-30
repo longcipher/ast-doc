@@ -653,13 +653,16 @@ fn then_no_txt_files(world: &mut AstDocWorld) {
     assert!(!result.output.contains("notes.txt"), "output should not contain notes.txt");
 }
 
-#[then(expr = "ast-doc should report a budget exceeded error")]
-fn then_budget_error(world: &mut AstDocWorld) {
+#[then(expr = "ast-doc should succeed with a budget warning")]
+fn then_budget_warning(world: &mut AstDocWorld) {
+    // With the new behavior, budget exceeded is now a warning, not an error.
+    // The pipeline should succeed even when budget cannot be met.
     assert!(
-        world.error.as_ref().expect("should have an error").contains("Budget exceeded"),
-        "error should be BudgetExceeded, got: {:?}",
+        world.pipeline_result.is_some(),
+        "pipeline should succeed even when budget is exceeded, got error: {:?}",
         world.error
     );
+    // The output may exceed the budget, but the pipeline completes successfully.
 }
 
 #[then(expr = "the error message should suggest increasing --max-tokens or using --no-git")]

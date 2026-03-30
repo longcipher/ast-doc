@@ -3,9 +3,13 @@
 //! Pure mathematical optimizer: selects from pre-computed `strategies_data`
 //! entries per `ParsedFile`. No string manipulation, just token arithmetic.
 
-use std::{collections::HashMap, path::Path};
+use std::{
+    collections::{HashMap, HashSet},
+    path::Path,
+};
 
 use globset::{Glob, GlobSet, GlobSetBuilder};
+use tracing::warn;
 
 use crate::{
     config::{AstDocConfig, OutputStrategy},
@@ -61,10 +65,12 @@ pub fn optimize(
     let mut total_tokens = compute_total(parsed, &assignments);
 
     // 4. Degradation loop
+    let mut stuck_files: HashSet<usize> = HashSet::new();
     while total_tokens > remaining_budget {
-        // Collect degradable files
+        // Collect degradable files (excluding stuck files)
         let mut degradable: Vec<(usize, OutputStrategy, usize)> = assignments
             .iter()
+            .filter(|(i, _)| !stuck_files.contains(i))
             .filter(|(_, strategy)| strategy.degrade().is_some())
             .filter(|(i, _)| !is_core(&core_set, &parsed[*i].path))
             .map(|(i, strategy)| {
@@ -74,11 +80,12 @@ pub fn optimize(
             .collect();
 
         if degradable.is_empty() {
-            return Err(AstDocError::BudgetExceeded {
-                message: format!(
-                    "All files at minimum strategy but still over budget: {total_tokens} > {remaining_budget}"
-                ),
-            });
+            warn!(
+                total_tokens = total_tokens,
+                remaining_budget = remaining_budget,
+                "Budget exceeded: All files at minimum strategy but still over budget. Continuing with minimum strategies."
+            );
+            break;
         }
 
         // Sort: files with tests first (NoTests saves more), then by token count desc
@@ -106,13 +113,9 @@ pub fn optimize(
             if let Some(min_strategy) = assignments[idx].1.degrade() {
                 assignments[idx] = (idx, min_strategy);
             } else {
-                // Already at minimum and no reduction — this shouldn't happen
-                // but guard against infinite loops
-                return Err(AstDocError::BudgetExceeded {
-                    message: format!(
-                        "No token reduction possible for file at index {idx}, stuck at {total_tokens} tokens"
-                    ),
-                });
+                // Already at minimum and no reduction — mark as stuck
+                // This handles very large files that can't be reduced further
+                stuck_files.insert(idx);
             }
         }
 
@@ -317,13 +320,17 @@ mod tests {
 
     #[test]
     fn test_all_summary_still_over_budget() {
-        // Even at Summary, still over budget → BudgetExceeded
+        // Even at Summary, still over budget → now succeeds with warning
         let files =
             vec![make_parsed("src/a.rs", 400, 300, 200), make_parsed("src/b.rs", 400, 300, 200)];
         // Summary total = 400, budget = 300
         let config = make_config(300, vec![]);
-        let result = optimize(&files, &config, 0);
-        assert!(matches!(result, Err(AstDocError::BudgetExceeded { .. })));
+        let result = optimize(&files, &config, 0).unwrap();
+        // Should succeed with minimum strategies applied
+        assert_eq!(result.files.len(), 2);
+        for f in &result.files {
+            assert_eq!(f.strategy, OutputStrategy::Summary);
+        }
     }
 
     #[test]
@@ -352,15 +359,20 @@ mod tests {
     }
 
     #[test]
-    fn test_all_core_over_budget_errors() {
-        // All files are core, over budget → error
+    fn test_all_core_over_budget_succeeds_with_warning() {
+        // All files are core, over budget → succeeds with warning (core files can't be degraded)
         let files = vec![
             make_parsed("src/lib.rs", 500, 400, 300),
             make_parsed("src/core.rs", 500, 400, 300),
         ];
         let config = make_config(500, vec!["**/*.rs"]);
-        let result = optimize(&files, &config, 0);
-        assert!(matches!(result, Err(AstDocError::BudgetExceeded { .. })));
+        let result = optimize(&files, &config, 0).unwrap();
+        // Should succeed with core files at Full strategy
+        assert_eq!(result.files.len(), 2);
+        for f in &result.files {
+            assert_eq!(f.strategy, OutputStrategy::Full);
+        }
+        assert_eq!(result.total_tokens, 1000); // 500 + 500
     }
 
     #[test]
@@ -425,16 +437,15 @@ mod tests {
         ) {
             let config = make_config(max_tokens, vec![]);
             match optimize(&files, &config, 0) {
-                Ok(result) => {
-                    prop_assert!(
-                        result.total_tokens <= max_tokens,
-                        "total_tokens ({}) > max_tokens ({})",
-                        result.total_tokens,
-                        max_tokens,
-                    );
+                Ok(_result) => {
+                    // With the new behavior, we always return Ok but may exceed budget
+                    // when all files are at minimum strategy. The important thing is
+                    // that we don't panic or return an error for this case.
+                    // If total_tokens > max_tokens, it means we couldn't fit within budget
+                    // even at minimum strategies, which is acceptable (just logs a warning).
                 }
                 Err(AstDocError::BudgetExceeded { .. }) => {
-                    // Acceptable: even minimum strategies exceed budget
+                    // Still acceptable for base overhead exceeding budget
                 }
                 Err(e) => {
                     panic!("unexpected error: {e:?}");

@@ -45,9 +45,8 @@ Feature: ast-doc llms.txt Generation
     When I run ast-doc with exclude pattern "*.txt"
     Then text files should not appear in the output
 
-  Scenario: Report error when budget is insufficient
+  Scenario: Succeed with warning when budget is insufficient
     Given a project directory with source files totalling 50000 tokens
     And a git diff totalling 5000 tokens
     When I run ast-doc with max-tokens set to 1000
-    Then ast-doc should report a budget exceeded error
-    And the error message should suggest increasing --max-tokens or using --no-git
+    Then ast-doc should succeed with a budget warning

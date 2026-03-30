@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 1b13f4315c8046b31b368706360e4310fb1b663eab2c6f8ee4bbb73f08b3b083 # shrinks to files = [ParsedFile { path: "src/a.rs", language: Rust, source: "", strategies_data: {Full: StrategyData { content: "", token_count: 1692 }, NoTests: StrategyData { content: "", token_count: 1692 }, Summary: StrategyData { content: "", token_count: 1692 }} }], max_tokens = 1324
