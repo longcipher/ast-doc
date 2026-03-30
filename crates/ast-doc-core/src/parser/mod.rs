@@ -167,7 +167,7 @@ pub fn parse_file(file: &DiscoveredFile, lang: &Language) -> Result<ParsedFile, 
         Language::Generic(name) => {
             lang::generic_parser::GenericParser::new(name).parse(&file.content, &file.path)
         }
-        #[cfg_attr(not(feature = "lang-pack"), expect(unreachable_patterns))]
+        #[allow(unreachable_patterns)]
         _ => Err(AstDocError::UnsupportedLanguage { language: lang.to_string() }),
     }
 }
