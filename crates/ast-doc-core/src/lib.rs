@@ -76,7 +76,7 @@ pub fn run_pipeline(config: &AstDocConfig) -> eyre::Result<PipelineResult> {
     let parsed: Vec<ParsedFile> = ingestion
         .files
         .par_iter()
-        .filter_map(|f| f.language.map(|lang| (f, lang)))
+        .filter_map(|f| f.language.as_ref().map(|lang| (f, lang)))
         .map(|(f, lang)| parser::parse_file(f, lang).map_err(eyre::Report::from))
         .collect::<eyre::Result<Vec<_>>>()?;
 
@@ -134,6 +134,6 @@ fn count_tokens(text: &str) -> usize {
 #[cfg(all(test, feature = "hotpath"))]
 #[ctor::ctor]
 fn init_hotpath_for_tests() {
-    let _guard = hotpath::GuardBuilder::new("test").build();
+    let _guard = hotpath::HotpathGuardBuilder::new("test").build();
     std::mem::forget(_guard);
 }

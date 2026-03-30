@@ -5,7 +5,7 @@
 #[cfg(feature = "hotpath")]
 #[ctor::ctor]
 fn init_hotpath_for_bdd() {
-    let _guard = hotpath::GuardBuilder::new("bdd_test").build();
+    let _guard = hotpath::HotpathGuardBuilder::new("bdd_test").build();
     std::mem::forget(_guard);
 }
 

@@ -18,11 +18,13 @@ all-languages = [
     "lang-typescript",
     "lang-go",
     "lang-c",
+    "lang-pack",
 ]
-default = ["lang-rust"]
+default = ["lang-rust", "lang-pack"]
 hotpath = ["dep:hotpath"]
 lang-c = ["tree-sitter-c"]
 lang-go = ["tree-sitter-go"]
+lang-pack = ["tree-sitter-language-pack"]
 lang-python = ["tree-sitter-python"]
 lang-rust = ["tree-sitter-rust"]
 lang-typescript = ["tree-sitter-typescript"]
@@ -42,6 +44,7 @@ tracing = { workspace = true }
 tree-sitter = { workspace = true }
 tree-sitter-c = { workspace = true, optional = true }
 tree-sitter-go = { workspace = true, optional = true }
+tree-sitter-language-pack = { workspace = true, optional = true }
 tree-sitter-python = { workspace = true, optional = true }
 tree-sitter-rust = { workspace = true, optional = true }
 tree-sitter-typescript = { workspace = true, optional = true }

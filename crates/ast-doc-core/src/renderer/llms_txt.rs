@@ -154,13 +154,15 @@ fn render_file(buf: &mut String, file: &ScheduledFile) {
 }
 
 /// Get the markdown fence language identifier for a `Language`.
-const fn language_fence(lang: &Language) -> &'static str {
+#[expect(clippy::missing_const_for_fn)]
+fn language_fence(lang: &Language) -> &str {
     match lang {
         Language::Rust => "rust",
         Language::Python => "python",
         Language::TypeScript => "typescript",
         Language::Go => "go",
         Language::C => "c",
+        Language::Generic(name) => name.as_str(),
     }
 }
 

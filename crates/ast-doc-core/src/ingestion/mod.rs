@@ -76,18 +76,18 @@ pub fn run_ingestion(config: &AstDocConfig) -> Result<IngestionResult, AstDocErr
         let abs_path = root.join(rel_path);
         match std::fs::read_to_string(&abs_path) {
             Ok(content) => {
-                let language = crate::parser::detect_language(rel_path);
+                let lang = crate::parser::detect_language(rel_path);
                 let token_count = count_tokens(&content);
                 debug!(
                     path = %rel_path.display(),
-                    language = ?language,
+                    language = ?lang,
                     tokens = token_count,
                     "discovered file"
                 );
                 files.push(DiscoveredFile {
                     path: rel_path.clone(),
                     content,
-                    language,
+                    language: lang,
                     raw_token_count: token_count,
                 });
             }
