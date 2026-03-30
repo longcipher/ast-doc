@@ -22,12 +22,12 @@ pub struct GoParser;
 impl GoParser {
     /// Create a new Go parser.
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self
     }
 
     /// Parse source with tree-sitter, returning the tree.
-    fn parse_tree(&self, source: &str) -> Result<Tree, AstDocError> {
+    fn parse_tree(source: &str) -> Result<Tree, AstDocError> {
         let mut parser = Parser::new();
         let language = tree_sitter_go::LANGUAGE;
         parser.set_language(&language.into()).map_err(|e| AstDocError::Parse {
@@ -43,7 +43,7 @@ impl GoParser {
 
 impl LanguageParser for GoParser {
     fn parse(&self, source: &str, path: &Path) -> Result<ParsedFile, AstDocError> {
-        let tree = self.parse_tree(source)?;
+        let tree = Self::parse_tree(source)?;
         let root_node = tree.root_node();
 
         let is_test_file = path.to_string_lossy().ends_with("_test.go");

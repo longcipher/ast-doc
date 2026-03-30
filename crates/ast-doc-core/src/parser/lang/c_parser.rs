@@ -22,12 +22,12 @@ pub struct CParser;
 impl CParser {
     /// Create a new C parser.
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self
     }
 
     /// Parse source with tree-sitter, returning the tree.
-    fn parse_tree(&self, source: &str) -> Result<Tree, AstDocError> {
+    fn parse_tree(source: &str) -> Result<Tree, AstDocError> {
         let mut parser = Parser::new();
         let language = tree_sitter_c::LANGUAGE;
         parser.set_language(&language.into()).map_err(|e| AstDocError::Parse {
@@ -43,7 +43,7 @@ impl CParser {
 
 impl LanguageParser for CParser {
     fn parse(&self, source: &str, path: &Path) -> Result<ParsedFile, AstDocError> {
-        let tree = self.parse_tree(source)?;
+        let tree = Self::parse_tree(source)?;
         let root_node = tree.root_node();
 
         // C has no standard test markers

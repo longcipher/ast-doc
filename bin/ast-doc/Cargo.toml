@@ -12,8 +12,8 @@ description = "CLI for generating optimized llms.txt documentation from codebase
 readme = "README.md"
 
 [features]
-default = ["all-languages"]
 all-languages = ["ast-doc-core/all-languages"]
+default = ["all-languages"]
 hotpath = ["ast-doc-core/hotpath", "dep:hotpath"]
 
 [dependencies]
